@@ -1,0 +1,76 @@
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Archivos de entorno
+.env
+**/.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Directorios de construcción y distribución
+build/
+dist/
+**/build/
+**/dist/
+
+# Datos locales y volúmenes de Docker
+data/
+**/data/
+
+# Archivos generados por IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Archivos temporales
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Archivos de cobertura
+coverage/
+.nyc_output/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Minikube
+.minikube/
+.kube/
+
+# Archivos de bloqueo de paquete (opcional)
+# package-lock.json
+# yarn.lock
+
+# Archivos generados por Docker
+.docker/
+
+# Archivos específicos de Kubernetes
+kubectl.sha256
+
+# Despliegues locales
+local-deployments/
+
+# Archivos de credenciales
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+
+# Archivos de prueba
+**/test/coverage/
