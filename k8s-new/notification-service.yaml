@@ -6,6 +6,5 @@ spec:
   selector:
     app: notification-service
   ports:
-  - port: 8083
-    targetPort: 8083
-  type: ClusterIP
+    - port: 8083
+      targetPort: 8083

@@ -6,6 +6,5 @@ spec:
   selector:
     app: order-service
   ports:
-  - port: 8082
-    targetPort: 8082
-  type: ClusterIP
+    - port: 8082
+      targetPort: 8082
