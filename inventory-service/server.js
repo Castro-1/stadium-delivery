@@ -19,7 +19,7 @@ app.use('/api/products', productRoutes);
 
 // Conexión a MongoDB
 const PORT = process.env.PORT || 8081;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/stadium-inventory';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stadium-inventory';
 
 mongoose.connect(MONGODB_URI)
   .then(() => {

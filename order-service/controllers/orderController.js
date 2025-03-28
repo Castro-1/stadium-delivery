@@ -28,7 +28,8 @@ exports.createOrder = async (req, res) => {
     for (const item of items) {
       try {
         // Obtener información del producto desde el servicio de inventario
-        const response = await axios.get(`${process.env.INVENTORY_SERVICE_URL}/api/products/${item.productId}`);
+        const inventoryServiceUrl = process.env.INVENTORY_SERVICE_URL || 'http://localhost:8081';
+        const response = await axios.get(`${inventoryServiceUrl}/api/products/${item.productId}`);
         const product = response.data;
         
         // Crear el item del pedido
@@ -45,7 +46,7 @@ exports.createOrder = async (req, res) => {
         
         // Actualizar stock en el servicio de inventario
         await axios.put(
-          `${process.env.INVENTORY_SERVICE_URL}/api/products/${item.productId}/stock?quantity=${product.stock - item.quantity}`
+          `${inventoryServiceUrl}/api/products/${item.productId}/stock?quantity=${product.stock - item.quantity}`
         );
       } catch (error) {
         console.error('Error al procesar item del pedido:', error);

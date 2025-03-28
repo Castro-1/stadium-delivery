@@ -2,15 +2,27 @@
 version: '3'
 
 services:
-  frontend:
-    build: ./frontend
+  client-app:
+    build: ./client-app
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_INVENTORY_API_URL=http://localhost:8081/api
-      - REACT_APP_ORDER_API_URL=http://localhost:8082/api
-      - REACT_APP_NOTIFICATION_API_URL=http://localhost:8083/api
-      - REACT_APP_SOCKET_URL=http://localhost:8083
+      - VITE_INVENTORY_API_URL=http://localhost:8081/api
+      - VITE_ORDER_API_URL=http://localhost:8082/api
+      - VITE_NOTIFICATION_API_URL=http://localhost:8083/api
+    depends_on:
+      - inventory-service
+      - order-service
+      - notification-service
+
+  restaurant-admin:
+    build: ./restaurant-admin
+    ports:
+      - "3001:80"
+    environment:
+      - VITE_INVENTORY_API_URL=http://localhost:8081/api
+      - VITE_ORDER_API_URL=http://localhost:8082/api
+      - VITE_NOTIFICATION_API_URL=http://localhost:8083/api
     depends_on:
       - inventory-service
       - order-service
@@ -25,6 +37,10 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/stadium-inventory
     depends_on:
       - mongodb
+    restart: on-failure
+    volumes:
+      - ./inventory-service:/app
+      - /app/node_modules
 
   order-service:
     build: ./order-service
@@ -43,6 +59,10 @@ services:
       - postgres
       - kafka
       - inventory-service
+    restart: on-failure
+    volumes:
+      - ./order-service:/app
+      - /app/node_modules
 
   notification-service:
     build: ./notification-service
@@ -52,9 +72,15 @@ services:
       - PORT=8083
       - MONGODB_URI=mongodb://mongodb:27017/stadium-notifications
       - KAFKA_BROKER=kafka:9092
+      - ORDER_SERVICE_URL=http://order-service:8082
     depends_on:
       - mongodb
       - kafka
+      - order-service
+    restart: on-failure
+    volumes:
+      - ./notification-service:/app
+      - /app/node_modules
 
   mongodb:
     image: mongo:latest
@@ -88,14 +114,40 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server kafka:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kafka-setup:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: >
+      bash -c "
+        echo 'Waiting for Kafka to be ready...' &&
+        kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic order-events --partitions 1 --replication-factor 1 &&
+        echo 'Successfully created topics'"
+
+  # Scripts para inicializar datos
+  seed-data:
+    build: ./inventory-service
+    command: node scripts/seed-data.js
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/stadium-inventory
+    depends_on:
+      - mongodb
 
 volumes:
   mongodb-data:
