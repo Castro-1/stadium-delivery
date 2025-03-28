@@ -3,7 +3,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 // Conectar a MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/stadium-inventory';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stadium-inventory';
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
@@ -34,7 +34,7 @@ const sampleProducts = [
     price: 10.99,
     stock: 50,
     category: 'Comidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Hamburguesa',
+    imageUrl: 'https://placehold.co/300x200?text=Hamburguesa',
     venueId: 'venue456',
     vendorId: 'vendor123'
   },
@@ -44,7 +44,7 @@ const sampleProducts = [
     price: 8.99,
     stock: 60,
     category: 'Comidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=HotDog',
+    imageUrl: 'https://placehold.co/300x200?text=HotDog',
     venueId: 'venue456',
     vendorId: 'vendor123'
   },
@@ -54,7 +54,7 @@ const sampleProducts = [
     price: 7.50,
     stock: 40,
     category: 'Snacks',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Nachos',
+    imageUrl: 'https://placehold.co/300x200?text=Nachos',
     venueId: 'venue456',
     vendorId: 'vendor124'
   },
@@ -64,7 +64,7 @@ const sampleProducts = [
     price: 4.50,
     stock: 100,
     category: 'Bebidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Refresco',
+    imageUrl: 'https://placehold.co/300x200?text=Refresco',
     venueId: 'venue456',
     vendorId: 'vendor125'
   },
@@ -74,7 +74,7 @@ const sampleProducts = [
     price: 6.00,
     stock: 80,
     category: 'Bebidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Cerveza',
+    imageUrl: 'https://placehold.co/300x200?text=Cerveza',
     venueId: 'venue456',
     vendorId: 'vendor125'
   },
@@ -84,7 +84,7 @@ const sampleProducts = [
     price: 9.99,
     stock: 45,
     category: 'Comidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Pizza',
+    imageUrl: 'https://placehold.co/300x200?text=Pizza',
     venueId: 'venue456',
     vendorId: 'vendor126'
   },
@@ -94,7 +94,7 @@ const sampleProducts = [
     price: 5.50,
     stock: 70,
     category: 'Snacks',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Palomitas',
+    imageUrl: 'https://placehold.co/300x200?text=Palomitas',
     venueId: 'venue456',
     vendorId: 'vendor127'
   },
@@ -104,7 +104,7 @@ const sampleProducts = [
     price: 3.00,
     stock: 120,
     category: 'Bebidas',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Agua',
+    imageUrl: 'https://placehold.co/300x200?text=Agua',
     venueId: 'venue456',
     vendorId: 'vendor125'
   }

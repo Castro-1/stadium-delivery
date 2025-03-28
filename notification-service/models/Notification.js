@@ -4,8 +4,7 @@ const mongoose = require('mongoose');
 const notificationSchema = new mongoose.Schema({
   userId: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   type: {
     type: String,
@@ -14,6 +13,10 @@ const notificationSchema = new mongoose.Schema({
   message: {
     type: String,
     required: true
+  },
+  orderId: {
+    type: String,
+    required: false
   },
   read: {
     type: Boolean,
