@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-data
+  namespace: stadium-delivery
+spec:
+  template:
+    spec:
+      containers:
+        - name: seed-data
+          image: stadium-delivery/inventory-service:latest
+          imagePullPolicy: IfNotPresent
+          command: ["node", "scripts/seed-data.js"]
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: MONGODB_URI
+      restartPolicy: Never
+  backoffLimit: 3

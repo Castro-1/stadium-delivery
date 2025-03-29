@@ -1,19 +1,49 @@
-//order-service/services/kafkaProducer.js
 const { Kafka } = require('kafkajs');
 require('dotenv').config();
 
 const kafka = new Kafka({
   clientId: 'order-service',
-  brokers: [process.env.KAFKA_BROKER || 'kafka:9092']
+  brokers: [process.env.KAFKA_BROKER || 'localhost:29092'], // Cambiar a 29092
+  retry: {
+    initialRetryTime: 300,
+    retries: 10
+  }
 });
 
 const producer = kafka.producer();
+
+// Configurar Kafka y crear el tema si no existe
+const setupKafka = async () => {
+  try {
+    const admin = kafka.admin();
+    await admin.connect();
+    
+    const topics = await admin.listTopics();
+    if (!topics.includes('order-events')) {
+      await admin.createTopics({
+        topics: [{
+          topic: 'order-events',
+          numPartitions: 1,
+          replicationFactor: 1
+        }],
+        waitForLeaders: true
+      });
+      console.log('Tema order-events creado');
+    } else {
+      console.log('El tema order-events ya existe');
+    }
+    await admin.disconnect();
+  } catch (error) {
+    console.error('Error configurando Kafka:', error);
+  }
+};
 
 // Conectar al iniciar
 const connect = async () => {
   try {
     await producer.connect();
     console.log('Conectado al broker de Kafka');
+    await setupKafka();
   } catch (error) {
     console.error('Error al conectar a Kafka:', error);
   }

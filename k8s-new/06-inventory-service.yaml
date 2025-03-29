@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: stadium-delivery
+spec:
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+        - name: inventory-service
+          image: stadium-delivery/inventory-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: PORT_INVENTORY
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: MONGODB_URI
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  namespace: stadium-delivery
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30090
+  selector:
+    app: inventory-service

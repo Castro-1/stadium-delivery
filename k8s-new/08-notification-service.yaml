@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: stadium-delivery
+spec:
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: stadium-delivery/notification-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: PORT_NOTIFICATION
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: MONGODB_URI
+            - name: KAFKA_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_BROKER
+            - name: ORDER_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ORDER_SERVICE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: stadium-delivery
+spec:
+  type: NodePort
+  ports:
+    - port: 8083
+      targetPort: 8083
+      nodePort: 30092
+  selector:
+    app: notification-service
