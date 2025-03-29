@@ -1,0 +1,9 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: stadium-delivery
+data:
+  VITE_INVENTORY_API_URL: http://localhost:8081/api
+  VITE_ORDER_API_URL: http://localhost:8082/api
+  VITE_NOTIFICATION_API_URL: http://localhost:8083/api
