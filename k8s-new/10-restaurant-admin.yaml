@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-admin
+  namespace: stadium-delivery
+spec:
+  selector:
+    matchLabels:
+      app: restaurant-admin
+  template:
+    metadata:
+      labels:
+        app: restaurant-admin
+    spec:
+      containers:
+        - name: restaurant-admin
+          image: stadium-delivery/restaurant-admin:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_INVENTORY_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_INVENTORY_API_URL
+            - name: VITE_ORDER_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_ORDER_API_URL
+            - name: VITE_NOTIFICATION_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_NOTIFICATION_API_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-admin
+  namespace: stadium-delivery
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30081
+  selector:
+    app: restaurant-admin
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: restaurant-admin-ingress
+  namespace: stadium-delivery
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurant-admin
+                port:
+                  number: 80

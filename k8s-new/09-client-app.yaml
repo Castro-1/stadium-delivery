@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-app
+  namespace: stadium-delivery
+spec:
+  selector:
+    matchLabels:
+      app: client-app
+  template:
+    metadata:
+      labels:
+        app: client-app
+    spec:
+      containers:
+        - name: client-app
+          image: stadium-delivery/client-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_INVENTORY_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_INVENTORY_API_URL
+            - name: VITE_ORDER_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_ORDER_API_URL
+            - name: VITE_NOTIFICATION_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VITE_NOTIFICATION_API_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-app
+  namespace: stadium-delivery
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+  selector:
+    app: client-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: client-app-ingress
+  namespace: stadium-delivery
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: client-app
+                port:
+                  number: 80

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: stadium-delivery
+spec:
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: stadium-delivery/order-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: PORT_ORDER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: DB_PASSWORD
+            - name: KAFKA_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_BROKER
+            - name: INVENTORY_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: INVENTORY_SERVICE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: stadium-delivery
+spec:
+  type: NodePort
+  ports:
+    - port: 8082
+      targetPort: 8082
+      nodePort: 30091
+  selector:
+    app: order-service
