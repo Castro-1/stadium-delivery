@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-config
-data:
-  REACT_APP_INVENTORY_SERVICE_URL: "http://inventory-service:8081"
-  REACT_APP_ORDER_SERVICE_URL: "http://order-service:8082"
-  REACT_APP_NOTIFICATION_SERVICE_URL: "http://notification-service:8083"
-  REACT_APP_SOCKET_URL: "http://notification-service:8083"
