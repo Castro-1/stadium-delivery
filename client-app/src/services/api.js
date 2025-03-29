@@ -1,3 +1,4 @@
+// src/services/api.js
 import axios from 'axios';
 
 const inventoryAPI = axios.create({
@@ -12,9 +13,24 @@ const notificationAPI = axios.create({
   baseURL: 'http://localhost:8083/api'
 });
 
-export const getProducts = async (venueId) => {
+export const getProducts = async (venueId, filters = {}) => {
   try {
-    const response = await inventoryAPI.get(`/products/venue/${venueId}`);
+    // Construir los parámetros de consulta
+    const params = new URLSearchParams();
+    
+    // Añadir filtros si están definidos
+    if (filters.name) params.append('name', filters.name);
+    if (filters.category) params.append('category', filters.category);
+    if (filters.minPrice) params.append('minPrice', filters.minPrice);
+    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+    if (filters.inStock !== undefined) params.append('inStock', filters.inStock);
+    if (filters.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+    
+    // URL base + parámetros de consulta
+    const url = `products/venue/${venueId}${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    const response = await inventoryAPI.get(url);
     return response.data;
   } catch (error) {
     console.error('Error fetching products:', error);
